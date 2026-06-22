@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Volley Clicker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <div class="hd-inner">
+      <div class="brand">
+        <span class="brand-ball">🏐</span>
+        <div>
+          <p class="brand-top">VOLLEY</p>
+          <p class="brand-bot">CLICKER</p>
+        </div>
+      </div>
+      <p class="hd-tip">Ballon doré → ×5 pendant 10s</p>
+    </div>
+  </header>
+
+  <!-- Scoreboard pleine largeur -->
+  <div class="scoreboard">
+    <div class="sb-inner">
+      <div class="sb-score">
+        <span class="sb-label">SCORE</span>
+        <div class="sb-num">
+          <span id="score">0</span><span class="sb-unit">pts</span>
+        </div>
+      </div>
+      <div class="sb-pps">
+        <span id="bps">0</span>
+        <span class="sb-pps-lbl">pt / s</span>
+      </div>
+    </div>
+
+    <div id="boost-bar" class="boost-bar hidden">
+      <div class="boost-inner">
+        <span class="boost-label">⚡ BOOST ×5</span>
+        <div class="boost-track"><div id="boost-fill" class="boost-fill"></div></div>
+        <span id="boost-timer">10s</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grille 4 colonnes -->
+  <main class="page">
+
+    <!-- Gauche : stats + succès -->
+    <aside class="col-left">
+      <p class="col-label">Stats</p>
+      <div class="stat-block">
+        <div class="sline">
+          <span class="sline-key">Par clic</span>
+          <span class="sline-val" id="stat-clic">1x</span>
+        </div>
+        <div class="sline">
+          <span class="sline-key">Total</span>
+          <span class="sline-val" id="stat-total">0</span>
+        </div>
+        <div class="sline">
+          <span class="sline-key">Clics</span>
+          <span class="sline-val" id="stat-clics">0</span>
+        </div>
+      </div>
+
+      <div class="col-sep"></div>
+
+      <p class="col-label">Succès</p>
+      <div class="badge-list">
+        <div class="badge" id="badge-1">Premier point</div>
+        <div class="badge" id="badge-2">100 points</div>
+        <div class="badge" id="badge-3">1 000 points</div>
+        <div class="badge" id="badge-4">10 000 points</div>
+      </div>
+    </aside>
+
+    <!-- Centre : ballon -->
+    <section class="col-center">
+      <div class="stage">
+        <div id="ball" onclick="handleClick(event)">
+          <img src="ballon_volley_mikasa-mvt500-removebg-preview.png" alt="Ballon" draggable="false" />
+        </div>
+        <div class="ball-shadow"></div>
+        <p class="cta-hint">— Frappe le ballon —</p>
+      </div>
+    </section>
+
+    <!-- Filet de volley -->
+    <div class="net" aria-hidden="true">
+      <div class="net-post net-l"></div>
+      <div class="net-post net-r"></div>
+      <div class="net-tape"></div>
+      <div class="net-mesh"></div>
+      <div class="net-tape net-bot"></div>
+    </div>
+
+    <!-- Droite : améliorations -->
+    <aside class="col-right">
+      <p class="col-label">Équipement</p>
+
+      <div class="upgrade-list">
+
+        <div class="upg" id="upg-ramasseur" onclick="buy('ramasseur')">
+          <span class="upg-icon">🧺</span>
+          <div class="upg-info">
+            <p class="upg-name">Ramasseur de balles</p>
+            <p class="upg-fx">+1 pt / seconde</p>
+          </div>
+          <div class="upg-end">
+            <p class="upg-cost" id="cost-ramasseur">15 pts</p>
+            <span class="upg-count" id="count-ramasseur">—</span>
+          </div>
+        </div>
+
+        <div class="upg" id="upg-coach" onclick="buy('coach')">
+          <span class="upg-icon">🧑‍🏫</span>
+          <div class="upg-info">
+            <p class="upg-name">Coach personnel</p>
+            <p class="upg-fx">+5 pts / seconde</p>
+          </div>
+          <div class="upg-end">
+            <p class="upg-cost" id="cost-coach">100 pts</p>
+            <span class="upg-count" id="count-coach">—</span>
+          </div>
+        </div>
+
+        <div class="upg" id="upg-gants" onclick="buy('gants')">
+          <span class="upg-icon">🥊</span>
+          <div class="upg-info">
+            <p class="upg-name">Super gants</p>
+            <p class="upg-fx">×2 pts par clic</p>
+          </div>
+          <div class="upg-end">
+            <p class="upg-cost" id="cost-gants">80 pts</p>
+            <span class="upg-count" id="count-gants">—</span>
+          </div>
+        </div>
+
+        <div class="upg" id="upg-equipe" onclick="buy('equipe')">
+          <span class="upg-icon">👥</span>
+          <div class="upg-info">
+            <p class="upg-name">Équipe complète</p>
+            <p class="upg-fx">+25 pts / seconde</p>
+          </div>
+          <div class="upg-end">
+            <p class="upg-cost" id="cost-equipe">500 pts</p>
+            <span class="upg-count" id="count-equipe">—</span>
+          </div>
+        </div>
+
+        <div class="upg" id="upg-frappe" onclick="buy('frappe')">
+          <span class="upg-icon">⚡</span>
+          <div class="upg-info">
+            <p class="upg-name">Frappe turbo</p>
+            <p class="upg-fx">×3 pts par clic</p>
+          </div>
+          <div class="upg-end">
+            <p class="upg-cost" id="cost-frappe">400 pts</p>
+            <span class="upg-count" id="count-frappe">—</span>
+          </div>
+        </div>
+
+        <div class="upg" id="upg-stade" onclick="buy('stade')">
+          <span class="upg-icon">🏟️</span>
+          <div class="upg-info">
+            <p class="upg-name">Stade de volley</p>
+            <p class="upg-fx">+100 pts / seconde</p>
+          </div>
+          <div class="upg-end">
+            <p class="upg-cost" id="cost-stade">2 000 pts</p>
+            <span class="upg-count" id="count-stade">—</span>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- Ballon doré -->
+  <div id="golden-ball" onclick="clickGoldenBall(event)">
+    <div class="gb-ball">
+      <svg class="countdown-ring" viewBox="0 0 96 96">
+        <circle class="ring-bg" cx="48" cy="48" r="42"/>
+        <circle class="ring-fg" id="ring-fg" cx="48" cy="48" r="42"/>
+      </svg>
+      <img src="ballon_volley_mikasa-mvt500-removebg-preview.png" alt="Ballon doré" draggable="false" />
+    </div>
+    <p class="gb-label">BALLON DORÉ</p>
+  </div>
+
+  <!-- Palier -->
+  <div id="milestone-popup" class="milestone-popup">
+    <span id="milestone-icon" class="milestone-icon">🔥</span>
+    <div>
+      <p class="milestone-sub">Palier atteint !</p>
+      <p id="milestone-val" class="milestone-val">10 000 pts</p>
+    </div>
+  </div>
+
+  <!-- Flash -->
+  <div id="flash" class="screen-flash"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
